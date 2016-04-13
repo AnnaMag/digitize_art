@@ -3,12 +3,14 @@
 touch $1
 touch temp
 
-echo "id, accession_number, year_acquired, type" > header.txt
+echo "id, year_acquired, type, description, medium, image" > header.txt
 
 for f in $( find "`pwd`" -name *json); do
-   jq '[.id, .accession_number, .year_acquired, .type] | join(", ")' $f | sed 's/\"//g' >> temp
+   echo $f
+   jq '[.id, .year_acquired, .type, .description, .medium, .images[0].b.url ] | join(";;")' $f \
+    | sed 's/\"//g' | sed 's/,/ /g' | sed 's/;;/,/g' >> temp
 done
 
 cat header.txt temp > $1
 
-rm temp header.txt
+rm temp  header.txt
